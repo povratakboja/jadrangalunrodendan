@@ -968,7 +968,10 @@
       alreadySigned.classList.add('visible');
       submitBtn.style.display = 'none';
       agreeCheck.disabled = true;
-      loadLog();
+
+      // Odmah dodaj u lokalni log bez čekanja na API
+      allEntries.push({ name, timestamp: new Date().toISOString() });
+      renderLog(todayKey());
     });
 
     // ── Log ────────────────────────────────────────────────────
