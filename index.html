@@ -47,7 +47,6 @@
     .bg-3 { background-image: url('3.jpeg'); }
     .bg-4 { background-image: url('4.jpeg'); }
 
-    /* Dark overlay always on top of background */
     .bg-overlay {
       position: fixed;
       inset: 0;
@@ -56,7 +55,6 @@
       transition: backdrop-filter 0.4s ease;
     }
 
-    /* Black out bg when a modal is open */
     .bg-overlay.blurred {
       background: rgba(0,0,0,0.97);
     }
@@ -123,7 +121,6 @@
       padding-bottom: 12px;
     }
 
-    /* FORM */
     .form-group { margin-bottom: 20px; }
 
     label {
@@ -216,7 +213,6 @@
       margin: 8px 0 16px;
     }
 
-    /* SUCCESS */
     .success-banner {
       display: none;
       background: #0d2a1a;
@@ -258,7 +254,6 @@
 
     .error-msg.visible { display: block; }
 
-    /* LOG */
     .log-entry {
       display: flex;
       justify-content: space-between;
@@ -322,7 +317,6 @@
 
     .log-date-select:hover, .log-date-select:focus { border-color: var(--gold); color: var(--text); }
 
-    /* ===== MODAL ===== */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -431,7 +425,6 @@
 
     .btn-close:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    /* ===== SIGNATURE MODAL ===== */
     .sig-canvas-wrap {
       position: relative;
       margin: 16px 0 8px;
@@ -484,7 +477,6 @@
 </head>
 <body>
 
-  <!-- Background layers -->
   <div class="bg-layer bg-1 active" id="bg1"></div>
   <div class="bg-layer bg-2" id="bg2"></div>
   <div class="bg-layer bg-3" id="bg3"></div>
@@ -508,7 +500,6 @@
     📜 Već ste potpisali ovaj dokument. Vaša suglasnost je zabilježena.
   </div>
 
-  <!-- CONSENT FORM CARD -->
   <div class="card">
     <h2>§ Izjava o Suglasnosti</h2>
 
@@ -523,7 +514,6 @@
       <p class="error-msg" id="errorMsg">Molimo unesite vaše ime prije potpisivanja.</p>
     </div>
 
-    <!-- Hidden until terms read -->
     <div class="checkbox-row" id="checkboxRow">
       <input type="checkbox" id="agreeCheck" />
       <span>Pročitao/pročitala sam i razumijem sve uvjete navedene u Uvjetima Korištenja i Suglasnosti, te izjavljujem da sam u cijelosti upoznat/upoznata s činjenicom da <strong>20. lipnja 2026. godine (po Gregorijanskom kalendaru)</strong> pada Rođendan Proslavljenog.</span>
@@ -534,7 +524,6 @@
     </button>
   </div>
 
-  <!-- LOG CARD -->
   <div class="card">
     <h2>§ Registar Svjedoka</h2>
     <div class="log-date-row">
@@ -594,7 +583,7 @@
 
         <h3>ČLANAK VII — ZAVRŠNE ODREDBE</h3>
         <p><span class="article-num">7.1</span> Ovaj Dokument stupa na snagu trenutkom davanja suglasnosti Svjedoka.</p>
-        <p><span class="article-num">7.2</span> Potpisivanjem ovog Dokumenta Svjedok potvrđuje da je pročitao/pročitala sve odredbe, da ih je razumio/razumjela te da ih prihvaća u cijelosti, bez rezervi i bez pritiska (osim blagog moralnog pritiska koji je sasvim primjeren s obzirom na okolnosti).</p>
+        <p><span class="article-num">7.2</span> Potpisivanjem ovog Dokumenta Svjedok potvrđuje da je pročitao/pročitala sve odredbe, da ih je razumio/razumjela te da ih prihvaća u cijelosti, bez rezervi i bez pritiska (osim blagog moralnog pritiska koji je sasvim primjeren s obzirom na okolnostima).</p>
         <p><span class="article-num">7.3</span> Dokument se ne može naknadno opozvati. Jednom dana suglasnost, uvijek dana suglasnost.</p>
         <p><span class="article-num">7.4</span> Proslavljeni zahvaljuje svim Svjedocima na strpljenju, razumijevanju i čitanju ovog Dokumenta do kraja. Svu potencijalnu krivicu možete uputiti zaslužnom za ovaj dokument.</p>
 
@@ -607,7 +596,7 @@
     </div>
   </div>
 
-  <!-- ===== SIGNATURE MODAL (Predostrožne mjere) ===== -->
+  <!-- ===== SIGNATURE MODAL ===== -->
   <div class="modal-overlay" id="sigModal">
     <div class="modal" style="max-width:560px;">
       <div class="modal-header">
@@ -617,7 +606,6 @@
         <p style="color:#bbb; font-size:0.85rem; line-height:1.7; margin-bottom:16px;">
           Kao posljednji korak ovog postupka, od Vas se zahtijeva vlastoručni potpis kojim potvrđujete autentičnost vaše suglasnosti.
         </p>
-
         <label>Vlastoručni potpis</label>
         <div class="sig-canvas-wrap">
           <canvas id="sigCanvas" width="620" height="160"></canvas>
@@ -696,30 +684,27 @@
       bgOverlay.classList.toggle('blurred', on);
     }
 
-    // ── State machine ──────────────────────────────────────────
-    // 'initial'   → name input visible, button opens terms modal
-    // 'terms_read' → checkbox shown, button disabled until checked
-    // 'agreed'    → button opens signature modal
-    // 'done'      → submitted
-
+    // ── State ──────────────────────────────────────────────────
     let appState = 'initial';
     let hasSig = false;
 
-    const nameInput    = document.getElementById('nameInput');
-    const errorMsg     = document.getElementById('errorMsg');
-    const checkboxRow  = document.getElementById('checkboxRow');
-    const agreeCheck   = document.getElementById('agreeCheck');
-    const submitBtn    = document.getElementById('submitBtn');
+    const nameInput     = document.getElementById('nameInput');
+    const errorMsg      = document.getElementById('errorMsg');
+    const checkboxRow   = document.getElementById('checkboxRow');
+    const agreeCheck    = document.getElementById('agreeCheck');
+    const submitBtn     = document.getElementById('submitBtn');
     const successBanner = document.getElementById('successBanner');
     const alreadySigned = document.getElementById('alreadySigned');
-    const logList      = document.getElementById('logList');
-    const logCount     = document.getElementById('logCount');
+    const logList       = document.getElementById('logList');
+    const logCount      = document.getElementById('logCount');
+    const logDateSelect = document.getElementById('logDateSelect');
+    const logDateLabel  = document.getElementById('logDateLabel');
 
     // Terms modal
-    const termsModal    = document.getElementById('termsModal');
-    const termsBody     = document.getElementById('termsModalBody');
+    const termsModal      = document.getElementById('termsModal');
+    const termsBody       = document.getElementById('termsModalBody');
     const termsScrollHint = document.getElementById('termsScrollHint');
-    const termsCloseBtn = document.getElementById('termsCloseBtn');
+    const termsCloseBtn   = document.getElementById('termsCloseBtn');
 
     // Sig modal
     const sigModal     = document.getElementById('sigModal');
@@ -729,22 +714,21 @@
     const sigCancelBtn = document.getElementById('sigCancelBtn');
 
     // Captcha modal
-    const captchaModal      = document.getElementById('captchaModal');
-    const captchaQuestion   = document.getElementById('captchaQuestion');
-    const captchaDay        = document.getElementById('captchaDay');
-    const captchaMonth      = document.getElementById('captchaMonth');
-    const captchaYear       = document.getElementById('captchaYear');
-    const captchaError      = document.getElementById('captchaError');
-    const captchaSubmitBtn  = document.getElementById('captchaSubmitBtn');
+    const captchaModal     = document.getElementById('captchaModal');
+    const captchaQuestion  = document.getElementById('captchaQuestion');
+    const captchaDay       = document.getElementById('captchaDay');
+    const captchaMonth     = document.getElementById('captchaMonth');
+    const captchaYear      = document.getElementById('captchaYear');
+    const captchaError     = document.getElementById('captchaError');
+    const captchaSubmitBtn = document.getElementById('captchaSubmitBtn');
 
-    // ── Initial state ──────────────────────────────────────────
+    // ── Init ───────────────────────────────────────────────────
     submitBtn.disabled = false;
-
     if (localStorage.getItem('birthday_signed')) {
       alreadySigned.classList.add('visible');
     }
 
-    // ── Main button click ──────────────────────────────────────
+    // ── Main button ────────────────────────────────────────────
     submitBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       if (!name) {
@@ -762,13 +746,9 @@
       errorMsg.classList.remove('visible');
       errorMsg.textContent = 'Molimo unesite vaše ime prije potpisivanja.';
 
-      if (appState === 'initial') {
-        openTermsModal();
-      } else if (appState === 'agreed') {
-        openSigModal();
-      } else if (appState === 'signed') {
-        openCaptchaModal();
-      }
+      if (appState === 'initial')  openTermsModal();
+      else if (appState === 'agreed') openSigModal();
+      else if (appState === 'signed') openCaptchaModal();
     });
 
     // ── Terms modal ────────────────────────────────────────────
@@ -796,7 +776,6 @@
       document.body.style.overflow = '';
       setBlur(false);
       appState = 'terms_read';
-      // Show checkbox, disable button until checked
       checkboxRow.classList.add('visible');
       agreeCheck.checked = false;
       submitBtn.disabled = true;
@@ -826,11 +805,7 @@
       return [(src.clientX - rect.left) * scaleX, (src.clientY - rect.top) * scaleY];
     }
 
-    function startDraw(e) {
-      e.preventDefault();
-      drawing = true;
-      [lastX, lastY] = canvasPos(e);
-    }
+    function startDraw(e) { e.preventDefault(); drawing = true; [lastX, lastY] = canvasPos(e); }
 
     function draw(e) {
       if (!drawing) return;
@@ -886,16 +861,15 @@
       setBlur(false);
     });
 
-    // ── Sig → back to homepage ─────────────────────────────────
     sigSubmitBtn.addEventListener('click', () => {
       sigModal.classList.remove('open');
       document.body.style.overflow = '';
       setBlur(false);
       appState = 'signed';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Potpisujem Suglasnost';
     });
 
+    // ── Captcha modal ──────────────────────────────────────────
     function openCaptchaModal() {
       const name = nameInput.value.trim();
       captchaQuestion.textContent = `Kojeg dana sam ja, ${name}, pozvan/a na rođendan?`;
@@ -911,21 +885,17 @@
     }
 
     function checkCaptchaDate() {
-      const d = captchaDay.value.trim();
-      const m = captchaMonth.value.trim();
-      const y = captchaYear.value.trim();
-      const ok = d === '20' && m === '06' && y === '2026';
+      const ok = captchaDay.value.trim() === '20' &&
+                 captchaMonth.value.trim() === '06' &&
+                 captchaYear.value.trim() === '2026';
       captchaSubmitBtn.disabled = !ok;
       captchaError.style.display = 'none';
     }
 
-    // Only allow digits, auto-advance to next field
     function setupDateField(el, nextEl) {
       el.addEventListener('input', () => {
         el.value = el.value.replace(/\D/g, '');
-        if (el.value.length === parseInt(el.maxLength) && nextEl) {
-          nextEl.focus();
-        }
+        if (el.value.length === parseInt(el.maxLength) && nextEl) nextEl.focus();
         checkCaptchaDate();
       });
     }
@@ -936,14 +906,16 @@
 
     // ── Final submit ───────────────────────────────────────────
     captchaSubmitBtn.addEventListener('click', async () => {
-      const ok = captchaDay.value.trim() === '20' && captchaMonth.value.trim() === '06' && captchaYear.value.trim() === '2026';
-      if (!ok) {
-        captchaError.style.display = 'block';
-        return;
-      }
+      const ok = captchaDay.value.trim() === '20' &&
+                 captchaMonth.value.trim() === '06' &&
+                 captchaYear.value.trim() === '2026';
+      if (!ok) { captchaError.style.display = 'block'; return; }
+
       const name = nameInput.value.trim();
       captchaSubmitBtn.disabled = true;
       captchaSubmitBtn.textContent = 'Potpisivanje...';
+
+      const newEntry = { name, timestamp: new Date().toISOString() };
 
       try {
         const res = await fetch('/api/consent', {
@@ -953,8 +925,9 @@
         });
         if (!res.ok) throw new Error('Server error');
       } catch {
+        // Fallback: spremi lokalno
         const local = JSON.parse(localStorage.getItem('local_log') || '[]');
-        local.push({ name, timestamp: new Date().toISOString() });
+        local.push(newEntry);
         localStorage.setItem('local_log', JSON.stringify(local));
       }
 
@@ -969,18 +942,20 @@
       submitBtn.style.display = 'none';
       agreeCheck.disabled = true;
 
-      // Odmah dodaj u lokalni log bez čekanja na API
-      allEntries.push({ name, timestamp: new Date().toISOString() });
+      // Odmah dodaj u memoriju i re-renderiraj
+      allEntries.push(newEntry);
       renderLog(todayKey());
     });
 
     // ── Log ────────────────────────────────────────────────────
-    const logDateSelect = document.getElementById('logDateSelect');
-    const logDateLabel  = document.getElementById('logDateLabel');
     let allEntries = [];
 
     function todayKey() {
       return new Date().toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function renderLog(dateKey) {
@@ -1016,26 +991,28 @@
     async function loadLog() {
       try {
         const res = await fetch('/api/log');
-        allEntries = await res.json();
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        // API vraća { entries: [...], total: N }
+        allEntries = data.entries || [];
       } catch {
-        // lokalni dev — učitaj iz localStorage
+        // Fallback na localStorage (lokalni dev)
         allEntries = JSON.parse(localStorage.getItem('local_log') || '[]');
       }
 
-      // Skupi sve datume, sortiraj silazno
+      const today = todayKey();
+
+      // Skupi sve datume osim danas, sortiraj silazno
       const dateSet = new Set(allEntries.map(e => {
         const d = new Date(e.timestamp);
         return d.toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       }));
 
-      const today = todayKey();
       const otherDates = [...dateSet].filter(d => d !== today).sort((a, b) => {
-        // parse dd.mm.yyyy for sort
-        const parse = s => { const [d,m,y] = s.split('.'); return new Date(y,m-1,d); };
+        const parse = s => { const [dd, mm, yyyy] = s.split('.'); return new Date(yyyy, mm - 1, dd); };
         return parse(b) - parse(a);
       });
 
-      // Popuni dropdown s ostalim danima
       logDateSelect.innerHTML = '<option value="">— Odaberi drugi datum —</option>';
       otherDates.forEach(d => {
         const opt = document.createElement('option');
@@ -1044,17 +1021,14 @@
         logDateSelect.appendChild(opt);
       });
 
-      if (otherDates.length > 0) logDateSelect.style.display = '';
-
+      logDateSelect.style.display = otherDates.length > 0 ? '' : 'none';
       logDateLabel.textContent = 'Danas, ' + today;
       renderLog(today);
     }
 
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
+    // Učitaj odmah i osvježi svakih 30s
     loadLog();
+    setInterval(loadLog, 30000);
   </script>
 </body>
 </html>
